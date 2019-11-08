@@ -26,6 +26,7 @@ int main(int argc, const char *argv[])
         cout << "Usage: ill-fire-visualizer input_file" << endl;
     }
     
+    /* fft */
     const char *input_file = argv[1];
     SNDFILE *track_info;
     SF_INFO sf_info;
@@ -38,7 +39,6 @@ int main(int argc, const char *argv[])
     }
     
     int time_of_one_buffer = BUFFER_LEN / ((float) sf_info.samplerate) * 1000;
-    cout << glfwGetVersionString() << endl;
     
     fftw_complex *current_frequencies;
     fftw_plan p;
@@ -49,7 +49,7 @@ int main(int argc, const char *argv[])
     float current_frames [BUFFER_LEN];
     sf_count_t frames_read;
     
-    /* window initialization */
+    /* opengl */
     if (!glfwInit())
     {
         cout << "Failed to initialize GLFW" << endl;
@@ -83,7 +83,7 @@ int main(int argc, const char *argv[])
     
     glViewport(0, 0, screenWidth, screenHeight);
     
-    /* shaders */
+    /* compile shaders */
     Shader myShaders("vertex.sh", "fragment.sh");
     
     /* vertex data */
