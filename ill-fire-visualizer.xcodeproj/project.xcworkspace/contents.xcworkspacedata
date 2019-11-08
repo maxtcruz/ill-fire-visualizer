@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:ill-fire-visualizer.xcodeproj">
+      location = "group:../../../../../Downloads/glm/glm">
+   </FileRef>
+   <FileRef
+      location = "self:">
    </FileRef>
 </Workspace>

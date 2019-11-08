@@ -7,27 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		165CB1D023755331001CF3A1 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 165CB1CF23755330001CF3A1 /* libglfw.3.3.dylib */; };
+		16D5F5152189293D00D12E26 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5F5142189293D00D12E26 /* Shader.cpp */; };
 		16F0F382214454C700181307 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16F0F381214454C700181307 /* main.cpp */; };
 		16F0F38A214455CA00181307 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F389214455CA00181307 /* OpenGL.framework */; };
 		16F0F38E2144565900181307 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F38D2144565900181307 /* libGLEW.2.1.0.dylib */; };
-		16F0F390214456A700181307 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F38F214456A700181307 /* libglfw.3.2.dylib */; };
 		16F0F39221459FEA00181307 /* libsndfile.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F39121459FEA00181307 /* libsndfile.1.dylib */; };
 		16F0F394214612D000181307 /* libfftw3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F393214612D000181307 /* libfftw3.3.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		16F0F37C214454C700181307 /* CopyFiles */ = {
+		16F0F37C214454C700181307 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		165CB1CF23755330001CF3A1 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../../../usr/local/Cellar/glfw/3.3/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
+		168DC1F9217835F700B8FF16 /* Cellar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Cellar; path = ../../../../../../usr/local/Cellar; sourceTree = "<group>"; };
+		16D5F5132189272A00D12E26 /* Shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
+		16D5F5142189293D00D12E26 /* Shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
+		16D5F51821892ED200D12E26 /* vertex.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = vertex.sh; sourceTree = "<group>"; };
+		16D5F51921892F2300D12E26 /* fragment.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fragment.sh; sourceTree = "<group>"; };
 		16F0F37E214454C700181307 /* ill-fire-visualizer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ill-fire-visualizer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		16F0F381214454C700181307 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		16F0F389214455CA00181307 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -42,9 +50,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				165CB1D023755331001CF3A1 /* libglfw.3.3.dylib in Frameworks */,
 				16F0F394214612D000181307 /* libfftw3.3.dylib in Frameworks */,
 				16F0F39221459FEA00181307 /* libsndfile.1.dylib in Frameworks */,
-				16F0F390214456A700181307 /* libglfw.3.2.dylib in Frameworks */,
 				16F0F38E2144565900181307 /* libGLEW.2.1.0.dylib in Frameworks */,
 				16F0F38A214455CA00181307 /* OpenGL.framework in Frameworks */,
 			);
@@ -74,6 +82,10 @@
 			isa = PBXGroup;
 			children = (
 				16F0F381214454C700181307 /* main.cpp */,
+				16D5F5132189272A00D12E26 /* Shader.h */,
+				16D5F5142189293D00D12E26 /* Shader.cpp */,
+				16D5F51821892ED200D12E26 /* vertex.sh */,
+				16D5F51921892F2300D12E26 /* fragment.sh */,
 			);
 			path = "ill-fire-visualizer";
 			sourceTree = "<group>";
@@ -81,6 +93,8 @@
 		16F0F388214455CA00181307 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				165CB1CF23755330001CF3A1 /* libglfw.3.3.dylib */,
+				168DC1F9217835F700B8FF16 /* Cellar */,
 				16F0F393214612D000181307 /* libfftw3.3.dylib */,
 				16F0F39121459FEA00181307 /* libsndfile.1.dylib */,
 				16F0F38F214456A700181307 /* libglfw.3.2.dylib */,
@@ -99,7 +113,7 @@
 			buildPhases = (
 				16F0F37A214454C700181307 /* Sources */,
 				16F0F37B214454C700181307 /* Frameworks */,
-				16F0F37C214454C700181307 /* CopyFiles */,
+				16F0F37C214454C700181307 /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -147,6 +161,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16D5F5152189293D00D12E26 /* Shader.cpp in Sources */,
 				16F0F382214454C700181307 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,14 +275,15 @@
 		16F0F386214454C700181307 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/glew/2.1.0/lib,
-					/usr/local/Cellar/glfw/3.2.1/lib,
 					/usr/local/Cellar/libsndfile/1.0.28/lib,
 					/usr/local/Cellar/fftw/3.3.8/lib,
+					/usr/local/Cellar/glfw/3.3/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -276,14 +292,15 @@
 		16F0F387214454C700181307 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/glew/2.1.0/lib,
-					/usr/local/Cellar/glfw/3.2.1/lib,
 					/usr/local/Cellar/libsndfile/1.0.28/lib,
 					/usr/local/Cellar/fftw/3.3.8/lib,
+					/usr/local/Cellar/glfw/3.3/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
