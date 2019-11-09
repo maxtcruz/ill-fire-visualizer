@@ -1,16 +1,19 @@
 #include <iostream>
+#include <thread>
+#include <stack>
+#include <math.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <sndfile.hh>
+#include <complex.h>
 #include <fftw3.h>
-#include <math.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
 
 #define GLEW_STATIC
-#define BUFFER_LEN 2048
+#define BUFFER_LEN 64
 #define REAL 0
 #define IMAGINARY 1
 
@@ -27,27 +30,25 @@ int main(int argc, const char *argv[])
     }
     
     /* fft */
-    const char *input_file = argv[1];
-    SNDFILE *track_info;
-    SF_INFO sf_info;
-    memset(&sf_info, 0, sizeof(SF_INFO));
+    const char *inputFile = argv[1];
+    SNDFILE *trackInfo;
+    SF_INFO sfInfo;
+    memset(&sfInfo, 0, sizeof(SF_INFO));
 
-    if (! (track_info = sf_open(input_file, SFM_READ, &sf_info)))
+    if (! (trackInfo = sf_open(inputFile, SFM_READ, &sfInfo)))
     {
         cout << "Unable to open input file" << endl;
         return -1;
     }
     
-    int time_of_one_buffer = BUFFER_LEN / ((float) sf_info.samplerate) * 1000;
+    int timeOfOneBufferMicroseconds = BUFFER_LEN / ((float) sfInfo.samplerate) * 1000000;
+    int numChannels = sfInfo.channels;
     
-    fftw_complex *current_frequencies;
-    fftw_plan p;
+    fftw_complex *currentFrequencies = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * BUFFER_LEN);
+    fftw_plan plan = fftw_plan_dft_1d(BUFFER_LEN , currentFrequencies, currentFrequencies, FFTW_FORWARD, FFTW_ESTIMATE);
     
-    current_frequencies = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * BUFFER_LEN);
-    p = fftw_plan_dft_1d(BUFFER_LEN, current_frequencies, current_frequencies, FFTW_FORWARD, FFTW_ESTIMATE);
-    
-    float current_frames [BUFFER_LEN];
-    sf_count_t frames_read;
+    float currentFrames [BUFFER_LEN * numChannels];
+    sf_count_t framesRead;
     
     /* opengl */
     if (!glfwInit())
@@ -125,18 +126,26 @@ int main(int argc, const char *argv[])
     /* main rendering loop */
     while (!glfwWindowShouldClose(window))
     {
-        /* reading and transforming frames */
-//        if ((frames_read = sf_read_float(track_info, current_frames, BUFFER_LEN)))
-//        {
-//            for (int i = 0; i < BUFFER_LEN; ++i)
-//            {
-//                current_frequencies[i][REAL] = current_frames[i];
-//                current_frequencies[i][IMAGINARY] = 0;
-//            }
-//
-//            fftw_execute(p);
-//        }
+        auto timeOfNextIteration = chrono::steady_clock::now() + chrono::microseconds(timeOfOneBufferMicroseconds);
         
+        /* reading and transforming frames */
+        if ((framesRead = sf_read_float(trackInfo, currentFrames, BUFFER_LEN * numChannels)))
+        {
+            for (int i = 0; i < BUFFER_LEN * numChannels; i += numChannels)
+            {
+                // average left channel amplitude values
+                float sumAmplitude = 0.0f;
+                for (int j = 0; j < numChannels; ++j)
+                {
+                    sumAmplitude += currentFrames[i + j];
+                }
+                currentFrequencies[i / 2][REAL] = sumAmplitude / numChannels;
+                currentFrequencies[i / 2][IMAGINARY] = 0;
+            }
+
+            fftw_execute(plan);
+        }
+    
         glClearColor(0.5f, 0.5f, 0.5f, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         
@@ -154,29 +163,43 @@ int main(int argc, const char *argv[])
         GLint projectionLocation = glGetUniformLocation(myShaders.ID, "projection");
         glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
         
-        /* send modelView to shader */
-        glm::mat4 modelView = glm::mat4(1.0f);
-        modelView = glm::scale(modelView, glm::vec3(20.0f, 400.0f, 0.0f));
-        GLint modelViewLocation = glGetUniformLocation(myShaders.ID, "modelView");
-        glUniformMatrix4fv(modelViewLocation, 1, GL_FALSE, &modelView[0][0]);
-    
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        /* send modelView to shader & draw */
+        stack<glm::mat4> modelView;
+        modelView.push(glm::mat4(1.0f));
+        
+        for (int i = 0; i < BUFFER_LEN; ++i) {
+            modelView.push(modelView.top());
+            modelView.top() = glm::translate(modelView.top(), glm::vec3(-395.0f + (i * 10.0f), -300.0f, 0.0f));
+            float magnitude = sqrt(pow(currentFrequencies[i][REAL], 2) + pow(currentFrequencies[i][IMAGINARY], 2));
+            modelView.top() = glm::scale(modelView.top(), glm::vec3(5.0f, 50.0f + (100 * magnitude), 1.0f));
+            modelView.top() = glm::translate(modelView.top(), glm::vec3(0.0f, 0.5f, 0.0f));
+            
+            GLint modelViewLocation = glGetUniformLocation(myShaders.ID, "modelView");
+            glUniformMatrix4fv(modelViewLocation, 1, GL_FALSE, &modelView.top()[0][0]);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            
+            modelView.pop();
+        }
+        
+        modelView.pop();
         
         glfwPollEvents();
         glfwSwapBuffers(window);
+        
+        this_thread::sleep_until(timeOfNextIteration);
     }
 
     /* clean-up */
     
-    fftw_destroy_plan(p);
-    fftw_free(current_frequencies);
+    fftw_destroy_plan(plan);
+    fftw_free(currentFrequencies);
     
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     glfwTerminate();
     
-    if (sf_close(track_info) != 0)
+    if (sf_close(trackInfo) != 0)
     {
         cout << "Unable to close input file" << endl;
         return -1;
