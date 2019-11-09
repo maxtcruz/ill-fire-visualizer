@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		165CB1D023755331001CF3A1 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 165CB1CF23755330001CF3A1 /* libglfw.3.3.dylib */; };
-		16D5F5152189293D00D12E26 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5F5142189293D00D12E26 /* Shader.cpp */; };
+		169AE709237734AB00C8553E /* OpenGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169AE708237734AB00C8553E /* OpenGLContext.cpp */; };
+		16D5F5152189293D00D12E26 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5F5142189293D00D12E26 /* ShaderProgram.cpp */; };
 		16F0F382214454C700181307 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16F0F381214454C700181307 /* main.cpp */; };
 		16F0F38A214455CA00181307 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F389214455CA00181307 /* OpenGL.framework */; };
 		16F0F38E2144565900181307 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F38D2144565900181307 /* libGLEW.2.1.0.dylib */; };
@@ -32,8 +33,10 @@
 /* Begin PBXFileReference section */
 		165CB1CF23755330001CF3A1 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../../../usr/local/Cellar/glfw/3.3/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
 		168DC1F9217835F700B8FF16 /* Cellar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Cellar; path = ../../../../../../usr/local/Cellar; sourceTree = "<group>"; };
-		16D5F5132189272A00D12E26 /* Shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
-		16D5F5142189293D00D12E26 /* Shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
+		169AE7072377336500C8553E /* OpenGLContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLContext.h; sourceTree = "<group>"; };
+		169AE708237734AB00C8553E /* OpenGLContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLContext.cpp; sourceTree = "<group>"; };
+		16D5F5132189272A00D12E26 /* ShaderProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
+		16D5F5142189293D00D12E26 /* ShaderProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderProgram.cpp; sourceTree = "<group>"; };
 		16D5F51821892ED200D12E26 /* vertex.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = vertex.sh; sourceTree = "<group>"; };
 		16D5F51921892F2300D12E26 /* fragment.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fragment.sh; sourceTree = "<group>"; };
 		16F0F37E214454C700181307 /* ill-fire-visualizer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ill-fire-visualizer"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,11 +84,13 @@
 		16F0F380214454C700181307 /* ill-fire-visualizer */ = {
 			isa = PBXGroup;
 			children = (
-				16F0F381214454C700181307 /* main.cpp */,
-				16D5F5132189272A00D12E26 /* Shader.h */,
-				16D5F5142189293D00D12E26 /* Shader.cpp */,
 				16D5F51821892ED200D12E26 /* vertex.sh */,
 				16D5F51921892F2300D12E26 /* fragment.sh */,
+				16F0F381214454C700181307 /* main.cpp */,
+				16D5F5132189272A00D12E26 /* ShaderProgram.h */,
+				16D5F5142189293D00D12E26 /* ShaderProgram.cpp */,
+				169AE7072377336500C8553E /* OpenGLContext.h */,
+				169AE708237734AB00C8553E /* OpenGLContext.cpp */,
 			);
 			path = "ill-fire-visualizer";
 			sourceTree = "<group>";
@@ -161,8 +166,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16D5F5152189293D00D12E26 /* Shader.cpp in Sources */,
+				16D5F5152189293D00D12E26 /* ShaderProgram.cpp in Sources */,
 				16F0F382214454C700181307 /* main.cpp in Sources */,
+				169AE709237734AB00C8553E /* OpenGLContext.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

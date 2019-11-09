@@ -3,11 +3,11 @@
 #include <sstream>
 #include <iostream>
 #include <GLFW/glfw3.h>
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 using namespace std;
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath)
 {
     string vertexCode;
     string fragmentCode;
@@ -67,28 +67,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 }
-
-void Shader::use()
-{
-    glUseProgram(ID);
-}
-
-void Shader::setBool(const string &name, bool value) const
-{
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
-}
-
-void Shader::setInt(const string &name, int value) const
-{
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
-}
-
-void Shader::setFloat(const string &name, float value) const
-{
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
-}
     
-void Shader::checkCompileErrors(unsigned int shader, string type)
+void ShaderProgram::checkCompileErrors(unsigned int shader, string type)
 {
     int success;
     char infoLog[1024];
