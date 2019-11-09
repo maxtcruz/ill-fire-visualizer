@@ -13,7 +13,7 @@
 #include "Shader.h"
 
 #define GLEW_STATIC
-#define BUFFER_LEN 256
+#define FFT_SIZE 256
 #define REAL 0
 #define IMAGINARY 1
 
@@ -41,14 +41,14 @@ int main(int argc, const char *argv[])
         return -1;
     }
     
-    int timeOfOneBufferMicroseconds = BUFFER_LEN / ((float) sfInfo.samplerate) * 1000000;
+    int timeOfOneBufferMicroseconds = FFT_SIZE / ((float) sfInfo.samplerate) * 1000000;
     int numChannels = sfInfo.channels;
     
-    fftw_complex *inAmplitudes = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * BUFFER_LEN);
-    fftw_complex *outFrequencies = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * BUFFER_LEN);
-    fftw_plan plan = fftw_plan_dft_1d(BUFFER_LEN , inAmplitudes, outFrequencies, FFTW_FORWARD, FFTW_ESTIMATE);
+    fftw_complex *inAmplitudes = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * FFT_SIZE);
+    fftw_complex *outFrequencies = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * FFT_SIZE);
+    fftw_plan plan = fftw_plan_dft_1d(FFT_SIZE , inAmplitudes, outFrequencies, FFTW_FORWARD, FFTW_ESTIMATE);
     
-    float currentFrames [BUFFER_LEN * numChannels];
+    float currentFrames [FFT_SIZE * numChannels];
     sf_count_t framesRead;
     
     /* opengl */
@@ -130,9 +130,9 @@ int main(int argc, const char *argv[])
         auto timeOfNextIteration = chrono::steady_clock::now() + chrono::microseconds(timeOfOneBufferMicroseconds);
         
         /* reading and transforming frames */
-        if ((framesRead = sf_read_float(trackInfo, currentFrames, BUFFER_LEN * numChannels)))
+        if ((framesRead = sf_read_float(trackInfo, currentFrames, FFT_SIZE * numChannels)))
         {
-            for (int i = 0; i < BUFFER_LEN * numChannels; i += numChannels)
+            for (int i = 0; i < FFT_SIZE * numChannels; i += numChannels)
             {
                 // average left channel amplitude values
                 float sumAmplitude = 0.0f;
@@ -168,8 +168,8 @@ int main(int argc, const char *argv[])
         stack<glm::mat4> modelView;
         modelView.push(glm::mat4(1.0f));
         
-        for (int i = 0; i < BUFFER_LEN / 2; ++i) {
-            float frequencyBinThickness = ((float) screenWidth) / BUFFER_LEN;
+        for (int i = 0; i < FFT_SIZE / 2; ++i) {
+            float frequencyBinThickness = ((float) screenWidth) / FFT_SIZE;
             float frequencyBinMagnitude = sqrt(pow(outFrequencies[i][REAL], 2) + pow(outFrequencies[i][IMAGINARY], 2));
             float firstFrequencyBinXCoord = -1 * screenWidth * 0.5f + frequencyBinThickness;
             float frequencyBinDeltaXCoord = 2 * frequencyBinThickness;
