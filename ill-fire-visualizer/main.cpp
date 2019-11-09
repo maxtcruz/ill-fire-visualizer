@@ -13,7 +13,7 @@
 #include "Shader.h"
 
 #define GLEW_STATIC
-#define BUFFER_LEN 64
+#define BUFFER_LEN 256
 #define REAL 0
 #define IMAGINARY 1
 
@@ -44,8 +44,9 @@ int main(int argc, const char *argv[])
     int timeOfOneBufferMicroseconds = BUFFER_LEN / ((float) sfInfo.samplerate) * 1000000;
     int numChannels = sfInfo.channels;
     
-    fftw_complex *currentFrequencies = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * BUFFER_LEN);
-    fftw_plan plan = fftw_plan_dft_1d(BUFFER_LEN , currentFrequencies, currentFrequencies, FFTW_FORWARD, FFTW_ESTIMATE);
+    fftw_complex *inAmplitudes = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * BUFFER_LEN);
+    fftw_complex *outFrequencies = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * BUFFER_LEN);
+    fftw_plan plan = fftw_plan_dft_1d(BUFFER_LEN , inAmplitudes, outFrequencies, FFTW_FORWARD, FFTW_ESTIMATE);
     
     float currentFrames [BUFFER_LEN * numChannels];
     sf_count_t framesRead;
@@ -139,8 +140,8 @@ int main(int argc, const char *argv[])
                 {
                     sumAmplitude += currentFrames[i + j];
                 }
-                currentFrequencies[i / 2][REAL] = sumAmplitude / numChannels;
-                currentFrequencies[i / 2][IMAGINARY] = 0;
+                inAmplitudes[i / numChannels][REAL] = sumAmplitude / numChannels;
+                inAmplitudes[i / numChannels][IMAGINARY] = 0;
             }
 
             fftw_execute(plan);
@@ -167,11 +168,15 @@ int main(int argc, const char *argv[])
         stack<glm::mat4> modelView;
         modelView.push(glm::mat4(1.0f));
         
-        for (int i = 0; i < BUFFER_LEN; ++i) {
+        for (int i = 0; i < BUFFER_LEN / 2; ++i) {
+            float frequencyBinThickness = ((float) screenWidth) / BUFFER_LEN;
+            float frequencyBinMagnitude = sqrt(pow(outFrequencies[i][REAL], 2) + pow(outFrequencies[i][IMAGINARY], 2));
+            float firstFrequencyBinXCoord = -1 * screenWidth * 0.5f + frequencyBinThickness;
+            float frequencyBinDeltaXCoord = 2 * frequencyBinThickness;
+            
             modelView.push(modelView.top());
-            modelView.top() = glm::translate(modelView.top(), glm::vec3(-395.0f + (i * 10.0f), -300.0f, 0.0f));
-            float magnitude = sqrt(pow(currentFrequencies[i][REAL], 2) + pow(currentFrequencies[i][IMAGINARY], 2));
-            modelView.top() = glm::scale(modelView.top(), glm::vec3(5.0f, 50.0f + (100 * magnitude), 1.0f));
+            modelView.top() = glm::translate(modelView.top(), glm::vec3(firstFrequencyBinXCoord + (i * frequencyBinDeltaXCoord), -300.0f, 0.0f));
+            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, 50.0f + (100 * frequencyBinMagnitude), 1.0f));
             modelView.top() = glm::translate(modelView.top(), glm::vec3(0.0f, 0.5f, 0.0f));
             
             GLint modelViewLocation = glGetUniformLocation(myShaders.ID, "modelView");
@@ -192,7 +197,8 @@ int main(int argc, const char *argv[])
     /* clean-up */
     
     fftw_destroy_plan(plan);
-    fftw_free(currentFrequencies);
+    fftw_free(outFrequencies);
+    fftw_free(inAmplitudes);
     
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
