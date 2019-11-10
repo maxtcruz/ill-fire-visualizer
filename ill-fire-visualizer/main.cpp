@@ -10,10 +10,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include "OpenGLContext.h"
 
 #define GLEW_STATIC
-#define FFT_SIZE 256
+#define FFT_SIZE 128
 #define REAL 0
 #define IMAGINARY 1
 
@@ -28,9 +30,9 @@ int main(int argc, const char *argv[])
     {
         cout << "Usage: ill-fire-visualizer input_file" << endl;
     }
+    const char *inputFile = argv[1];
     
     /* fft */
-    const char *inputFile = argv[1];
     SNDFILE *trackInfo;
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(SF_INFO));
@@ -42,13 +44,12 @@ int main(int argc, const char *argv[])
     }
     
     int timeOfOneBufferNanoseconds = ((float) FFT_SIZE) / ((float) sfInfo.samplerate) * 1000000000;
-    int numChannels = sfInfo.channels;
     
     fftw_complex *inAmplitudes = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * FFT_SIZE);
     fftw_complex *outFrequencies = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * FFT_SIZE);
     fftw_plan plan = fftw_plan_dft_1d(FFT_SIZE , inAmplitudes, outFrequencies, FFTW_FORWARD, FFTW_ESTIMATE);
     
-    float currentFrames [FFT_SIZE * numChannels];
+    float currentFrames [FFT_SIZE * sfInfo.channels];
     sf_count_t framesRead;
     
     /* init opengl */
@@ -98,6 +99,31 @@ int main(int argc, const char *argv[])
     glVertexAttribPointer(positionLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(positionLocation);
     
+    /* sdl audio */
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        cout << "Unable to initialize SDL audio" << endl;
+        return -1;
+    }
+    
+    if (Mix_OpenAudio(sfInfo.samplerate, MIX_DEFAULT_FORMAT, sfInfo.channels, 2048) < 0)
+    {
+        cout << "Unable to open SDL Mixer audio" << endl;
+        return -1;
+    }
+    
+    Mix_Music *sound = Mix_LoadMUS(inputFile);
+    if (!sound)
+    {
+        cout << "Unable to load input file into the SDL Mixer: " << SDL_GetError() << endl;
+        return -1;
+    }
+    
+    if (Mix_PlayingMusic() == 0)
+    {
+        Mix_PlayMusic(sound, 1);
+    }
+    
     auto timeOfNextLoopIteration = chrono::steady_clock::now();
     
     /* main rendering loop */
@@ -106,24 +132,24 @@ int main(int argc, const char *argv[])
         timeOfNextLoopIteration += chrono::nanoseconds(timeOfOneBufferNanoseconds);
         
         /* reading and transforming frames */
-        if ((framesRead = sf_read_float(trackInfo, currentFrames, FFT_SIZE * numChannels)))
+        if ((framesRead = sf_read_float(trackInfo, currentFrames, FFT_SIZE * sfInfo.channels)))
         {
-            for (int i = 0; i < FFT_SIZE * numChannels; i += numChannels)
+            for (int i = 0; i < FFT_SIZE * sfInfo.channels; i += sfInfo.channels)
             {
                 // average all channel amplitude values
                 float sumAmplitude = 0.0f;
-                for (int j = 0; j < numChannels; ++j)
+                for (int j = 0; j < sfInfo.channels; ++j)
                 {
                     sumAmplitude += currentFrames[i + j];
                 }
-                float averageAmplitude = sumAmplitude / numChannels;
+                float averageAmplitude = sumAmplitude / sfInfo.channels;
                 
                 // apply hamming window function to amplitude
-                float hammingMultiplier = 0.54f - 0.46f * cos((2 * M_PI * (i / numChannels)) / (FFT_SIZE - 1));
+                float hammingMultiplier = 0.54f - 0.46f * cos((2 * M_PI * (i / sfInfo.channels)) / (FFT_SIZE - 1));
                 float amplitude = averageAmplitude * hammingMultiplier;
                 
-                inAmplitudes[i / numChannels][REAL] = amplitude;
-                inAmplitudes[i / numChannels][IMAGINARY] = 0;
+                inAmplitudes[i / sfInfo.channels][REAL] = amplitude;
+                inAmplitudes[i / sfInfo.channels][IMAGINARY] = 0;
             }
 
             /* transform amplitudes */
@@ -189,15 +215,19 @@ int main(int argc, const char *argv[])
     }
 
     /* clean-up */
-    fftw_destroy_plan(plan);
-    fftw_free(outFrequencies);
-    fftw_free(inAmplitudes);
+    Mix_FreeMusic(sound);
+    Mix_CloseAudio();
+    SDL_CloseAudio();
     
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     glfwTerminate();
     
+    fftw_destroy_plan(plan);
+    fftw_free(outFrequencies);
+    fftw_free(inAmplitudes);
+
     if (sf_close(trackInfo) != 0)
     {
         cout << "Unable to close input file" << endl;

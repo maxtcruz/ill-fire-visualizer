@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		165CB1D023755331001CF3A1 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 165CB1CF23755330001CF3A1 /* libglfw.3.3.dylib */; };
 		169AE709237734AB00C8553E /* OpenGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169AE708237734AB00C8553E /* OpenGLContext.cpp */; };
+		169AE70E2378ACD300C8553E /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 169AE70D2378ACD200C8553E /* libSDL2-2.0.0.dylib */; };
+		169AE7102378C1F500C8553E /* libSDL2_mixer-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 169AE70F2378C1F400C8553E /* libSDL2_mixer-2.0.0.dylib */; };
 		16D5F5152189293D00D12E26 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16D5F5142189293D00D12E26 /* ShaderProgram.cpp */; };
 		16F0F382214454C700181307 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16F0F381214454C700181307 /* main.cpp */; };
 		16F0F38A214455CA00181307 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F0F389214455CA00181307 /* OpenGL.framework */; };
@@ -35,6 +37,9 @@
 		168DC1F9217835F700B8FF16 /* Cellar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Cellar; path = ../../../../../../usr/local/Cellar; sourceTree = "<group>"; };
 		169AE7072377336500C8553E /* OpenGLContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLContext.h; sourceTree = "<group>"; };
 		169AE708237734AB00C8553E /* OpenGLContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLContext.cpp; sourceTree = "<group>"; };
+		169AE70B2378AA1D00C8553E /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../../../usr/local/Cellar/sdl2/2.0.8/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
+		169AE70D2378ACD200C8553E /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../../../usr/local/Cellar/sdl2/2.0.10/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
+		169AE70F2378C1F400C8553E /* libSDL2_mixer-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2_mixer-2.0.0.dylib"; path = "../../../../../../usr/local/Cellar/sdl2_mixer/2.0.4/lib/libSDL2_mixer-2.0.0.dylib"; sourceTree = "<group>"; };
 		16D5F5132189272A00D12E26 /* ShaderProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
 		16D5F5142189293D00D12E26 /* ShaderProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderProgram.cpp; sourceTree = "<group>"; };
 		16D5F51821892ED200D12E26 /* vertex.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = vertex.sh; sourceTree = "<group>"; };
@@ -53,6 +58,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				169AE7102378C1F500C8553E /* libSDL2_mixer-2.0.0.dylib in Frameworks */,
+				169AE70E2378ACD300C8553E /* libSDL2-2.0.0.dylib in Frameworks */,
 				165CB1D023755331001CF3A1 /* libglfw.3.3.dylib in Frameworks */,
 				16F0F394214612D000181307 /* libfftw3.3.dylib in Frameworks */,
 				16F0F39221459FEA00181307 /* libsndfile.1.dylib in Frameworks */,
@@ -98,6 +105,9 @@
 		16F0F388214455CA00181307 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				169AE70F2378C1F400C8553E /* libSDL2_mixer-2.0.0.dylib */,
+				169AE70B2378AA1D00C8553E /* libSDL2-2.0.0.dylib */,
+				169AE70D2378ACD200C8553E /* libSDL2-2.0.0.dylib */,
 				165CB1CF23755330001CF3A1 /* libglfw.3.3.dylib */,
 				168DC1F9217835F700B8FF16 /* Cellar */,
 				16F0F393214612D000181307 /* libfftw3.3.dylib */,
@@ -290,6 +300,8 @@
 					/usr/local/Cellar/libsndfile/1.0.28/lib,
 					/usr/local/Cellar/fftw/3.3.8/lib,
 					/usr/local/Cellar/glfw/3.3/lib,
+					/usr/local/Cellar/sdl2/2.0.10/lib,
+					/usr/local/Cellar/sdl2_mixer/2.0.4/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -307,6 +319,8 @@
 					/usr/local/Cellar/libsndfile/1.0.28/lib,
 					/usr/local/Cellar/fftw/3.3.8/lib,
 					/usr/local/Cellar/glfw/3.3/lib,
+					/usr/local/Cellar/sdl2/2.0.10/lib,
+					/usr/local/Cellar/sdl2_mixer/2.0.4/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

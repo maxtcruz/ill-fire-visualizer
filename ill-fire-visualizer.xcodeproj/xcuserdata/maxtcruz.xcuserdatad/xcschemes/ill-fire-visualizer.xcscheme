@@ -70,8 +70,12 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/maxtcruz/Downloads/riffsstillfire.wav"
+            argument = "/Users/maxtcruz/Downloads/apex.wav"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/maxtcruz/Downloads/riffsstillfire.wav"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
