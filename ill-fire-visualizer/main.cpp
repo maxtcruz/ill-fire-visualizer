@@ -41,7 +41,7 @@ int main(int argc, const char *argv[])
         return -1;
     }
     
-    int timeOfOneBufferMicroseconds = FFT_SIZE / ((float) sfInfo.samplerate) * 1000000;
+    int timeOfOneBufferNanoseconds = ((float) FFT_SIZE) / ((float) sfInfo.samplerate) * 1000000000;
     int numChannels = sfInfo.channels;
     
     fftw_complex *inAmplitudes = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * FFT_SIZE);
@@ -98,63 +98,82 @@ int main(int argc, const char *argv[])
     glVertexAttribPointer(positionLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(positionLocation);
     
+    auto timeOfNextLoopIteration = chrono::steady_clock::now();
+    
     /* main rendering loop */
     while (!glfwWindowShouldClose(openGLContext.window))
     {
-        auto timeOfNextIteration = chrono::steady_clock::now() + chrono::microseconds(timeOfOneBufferMicroseconds);
+        timeOfNextLoopIteration += chrono::nanoseconds(timeOfOneBufferNanoseconds);
         
         /* reading and transforming frames */
         if ((framesRead = sf_read_float(trackInfo, currentFrames, FFT_SIZE * numChannels)))
         {
             for (int i = 0; i < FFT_SIZE * numChannels; i += numChannels)
             {
-                // average left channel amplitude values
+                // average all channel amplitude values
                 float sumAmplitude = 0.0f;
                 for (int j = 0; j < numChannels; ++j)
                 {
                     sumAmplitude += currentFrames[i + j];
                 }
-                inAmplitudes[i / numChannels][REAL] = sumAmplitude / numChannels;
+                float averageAmplitude = sumAmplitude / numChannels;
+                
+                // apply hamming window function to amplitude
+                float hammingMultiplier = 0.54f - 0.46f * cos((2 * M_PI * (i / numChannels)) / (FFT_SIZE - 1));
+                float amplitude = averageAmplitude * hammingMultiplier;
+                
+                inAmplitudes[i / numChannels][REAL] = amplitude;
                 inAmplitudes[i / numChannels][IMAGINARY] = 0;
             }
 
+            /* transform amplitudes */
             fftw_execute(plan);
         }
+        else {
+            /* end program if no frames left */
+            break;
+        }
     
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         
         glUseProgram(shaderProgramID);
-        
-        /* send uniform color to shader */
-        GLint colorLocation = glGetUniformLocation(shaderProgramID, "vColor");
-        float color[] = {
-            0.0f, 0.0f, 1.0f, 0.0f
-        };
-        glUniform4fv(colorLocation, 1, color);
         
         /* send projection to shader */
         glm::mat4 projectionMatrix = glm::ortho(-400.0f, 400.0f, -300.0f, 300.0f);
         GLint projectionLocation = glGetUniformLocation(shaderProgramID, "projection");
         glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
         
-        /* send modelView to shader & draw */
+        GLint modelViewLocation = glGetUniformLocation(shaderProgramID, "modelView");
         stack<glm::mat4> modelView;
         modelView.push(glm::mat4(1.0f));
         
+        GLint colorLocation = glGetUniformLocation(shaderProgramID, "vColor");
+        float color[] = {
+            0.0f, 0.0f, 0.0f, 0.0f
+        };
+        
+        /* configure and draw each frequency bin */
         for (int i = 0; i < FFT_SIZE / 2; ++i) {
             float frequencyBinThickness = ((float) openGLContext.screenWidth) / FFT_SIZE;
-            float frequencyBinMagnitude = sqrt(pow(outFrequencies[i][REAL], 2) + pow(outFrequencies[i][IMAGINARY], 2));
+            float frequencyBinMagnitude = sqrt(pow(outFrequencies[i + 1][REAL], 2) + pow(outFrequencies[i + 1][IMAGINARY], 2));
             float firstFrequencyBinXCoord = -1 * openGLContext.screenWidth * 0.5f + frequencyBinThickness;
             float frequencyBinDeltaXCoord = 2 * frequencyBinThickness;
             
             modelView.push(modelView.top());
             modelView.top() = glm::translate(modelView.top(), glm::vec3(firstFrequencyBinXCoord + (i * frequencyBinDeltaXCoord), -300.0f, 0.0f));
-            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, 50.0f + (100 * frequencyBinMagnitude), 1.0f));
+            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, min(50.0f + (10 * frequencyBinMagnitude), openGLContext.screenHeight - 50.0f), 1.0f));
             modelView.top() = glm::translate(modelView.top(), glm::vec3(0.0f, 0.5f, 0.0f));
             
-            GLint modelViewLocation = glGetUniformLocation(shaderProgramID, "modelView");
+            /* send modelView to shader */
             glUniformMatrix4fv(modelViewLocation, 1, GL_FALSE, &modelView.top()[0][0]);
+            
+            /* send color to shader */
+            color[0] = ((float) (FFT_SIZE / 2 - i)) / (FFT_SIZE / 2);
+            color[2] = ((float) i) / (FFT_SIZE / 2);
+            glUniform4fv(colorLocation, 1, color);
+            
+            /* draw frequency bin */
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             
             modelView.pop();
@@ -165,7 +184,8 @@ int main(int argc, const char *argv[])
         glfwPollEvents();
         glfwSwapBuffers(openGLContext.window);
         
-        this_thread::sleep_until(timeOfNextIteration);
+        /* halt loop execution to stay in sync with audio */
+        this_thread::sleep_until(timeOfNextLoopIteration);
     }
 
     /* clean-up */

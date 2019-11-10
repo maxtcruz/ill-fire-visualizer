@@ -67,6 +67,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "/Users/maxtcruz/Downloads/loki_final_mix.wav"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/maxtcruz/Downloads/riffsstillfire.wav"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
