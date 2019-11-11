@@ -1,8 +1,6 @@
 #ifndef OpenGLContext_h
 #define OpenGLContext_h
 
-#include <GLFW/glfw3.h>
-
 class OpenGLContext
 {
 public:

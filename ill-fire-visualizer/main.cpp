@@ -13,10 +13,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include "OpenGLContext.h"
+#include "SDLAudio.h"
 
 #define GLEW_STATIC
 
-const int FFT_SIZE = 2048;
+const int FFT_SIZE = 1024;
 const int REAL = 0, IMAGINARY = 1;
 const GLint WIDTH = 800, HEIGHT = 600;
 
@@ -119,29 +120,13 @@ int main(int argc, const char *argv[])
     glEnableVertexAttribArray(positionLocation);
     
     /* sdl audio */
-    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    SDLAudio sdlAudio;
+    if (sdlAudio.initSDLAudio(inputFile, sfInfo.samplerate, sfInfo.channels) == -1)
     {
-        cout << "Unable to initialize SDL audio" << endl;
+        cout << "Failed to initialize SDL audio" << endl;
         return -1;
     }
-    
-    if (Mix_OpenAudio(sfInfo.samplerate, MIX_DEFAULT_FORMAT, sfInfo.channels, 2048) < 0)
-    {
-        cout << "Unable to open SDL Mixer audio" << endl;
-        return -1;
-    }
-    
-    Mix_Music *sound = Mix_LoadMUS(inputFile);
-    if (!sound)
-    {
-        cout << "Unable to load input file into the SDL Mixer: " << SDL_GetError() << endl;
-        return -1;
-    }
-    
-    if (Mix_PlayingMusic() == 0)
-    {
-        Mix_PlayMusic(sound, 1);
-    }
+    sdlAudio.play();
     
     auto timeOfNextLoopIteration = chrono::steady_clock::now();
     
@@ -237,9 +222,7 @@ int main(int argc, const char *argv[])
     }
 
     /* clean-up */
-    Mix_FreeMusic(sound);
-    Mix_CloseAudio();
-    SDL_CloseAudio();
+    sdlAudio.free();
     
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
