@@ -15,10 +15,9 @@
 #include "OpenGLContext.h"
 
 #define GLEW_STATIC
-#define FFT_SIZE 512
-#define REAL 0
-#define IMAGINARY 1
 
+const int FFT_SIZE = 2048;
+const int REAL = 0, IMAGINARY = 1;
 const GLint WIDTH = 800, HEIGHT = 600;
 
 using namespace std;
@@ -205,12 +204,13 @@ int main(int argc, const char *argv[])
         for (int i = 0; i < FFT_SIZE / 2; ++i) {
             float frequencyBinThickness = ((float) openGLContext.screenWidth) / FFT_SIZE;
             float frequencyBinMagnitude = sqrt(pow(outFrequencies[i + 1][REAL], 2) + pow(outFrequencies[i + 1][IMAGINARY], 2));
+            float frequencyBinLogarithmicMagnitude = log10(((float) i) / (FFT_SIZE / 2) * 256 + 1) * frequencyBinMagnitude;
             float firstFrequencyBinXCoord = -1 * openGLContext.screenWidth * 0.5f + frequencyBinThickness;
             float frequencyBinDeltaXCoord = 2 * frequencyBinThickness;
             
             modelView.push(modelView.top());
             modelView.top() = glm::translate(modelView.top(), glm::vec3(firstFrequencyBinXCoord + (i * frequencyBinDeltaXCoord), -300.0f, 0.0f));
-            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, min(50.0f + (10 * frequencyBinMagnitude), openGLContext.screenHeight - 50.0f), 10.0f));
+            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, min(50.0f + (10 * frequencyBinLogarithmicMagnitude), 550.0f), 10.0f));
             modelView.top() = glm::translate(modelView.top(), glm::vec3(0.0f, 0.5f, 0.0f));
             
             /* send modelView to shader */
