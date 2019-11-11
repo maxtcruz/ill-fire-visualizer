@@ -15,7 +15,7 @@
 #include "OpenGLContext.h"
 
 #define GLEW_STATIC
-#define FFT_SIZE 128
+#define FFT_SIZE 512
 #define REAL 0
 #define IMAGINARY 1
 
@@ -62,19 +62,39 @@ int main(int argc, const char *argv[])
     
     /* compile shaders */
     unsigned int shaderProgramID = openGLContext.compileShaderProgram("vertex.sh", "fragment.sh");
-    
-    /* vertex data */
+
     float vertices[] = {
-        -0.5f, -0.5f, // bottom-left
-        0.5f, -0.5f, // bottom-right
-        0.5f,  0.5f, // top-right
-        -0.5f, 0.5f // top-left
+        // front of cube
+        -0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        // back of cube
+        -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        -0.5f, 0.5f, -0.5f
     };
     
-    /* index data */
     unsigned int indices[] = {
-        0, 1, 3, // triangle 1
-        1, 2, 3 // triangle 2
+        // front
+        0, 1, 2,
+        2, 3, 0,
+        // right
+        1, 5, 6,
+        6, 2, 1,
+        // back
+        7, 6, 5,
+        5, 4, 7,
+        // left
+        4, 0, 3,
+        3, 7, 4,
+        // bottom
+        4, 5, 1,
+        1, 0, 4,
+        // top
+        3, 2, 6,
+        6, 7, 3
     };
     
     /* vertex buffers and attributes */
@@ -96,7 +116,7 @@ int main(int argc, const char *argv[])
     
     /* configure vertex attributes */
     GLint positionLocation = glGetAttribLocation(shaderProgramID, "vPosition");
-    glVertexAttribPointer(positionLocation, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(positionLocation);
     
     /* sdl audio */
@@ -161,18 +181,20 @@ int main(int argc, const char *argv[])
         }
     
         glClearColor(1.0f, 1.0f, 1.0f, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);
         
         glUseProgram(shaderProgramID);
         
         /* send projection to shader */
-        glm::mat4 projectionMatrix = glm::ortho(-400.0f, 400.0f, -300.0f, 300.0f);
+        glm::mat4 projectionMatrix = glm::perspective(glm::radians(60.0f), 4.0f / 3.0f, 0.1f, 10000.0f);
         GLint projectionLocation = glGetUniformLocation(shaderProgramID, "projection");
         glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
         
         GLint modelViewLocation = glGetUniformLocation(shaderProgramID, "modelView");
         stack<glm::mat4> modelView;
-        modelView.push(glm::mat4(1.0f));
+        modelView.push(glm::lookAt(glm::vec3(-500.0f, 50.0f, 500.0f), glm::vec3(-100.0f, -50.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
         
         GLint colorLocation = glGetUniformLocation(shaderProgramID, "vColor");
         float color[] = {
@@ -188,7 +210,7 @@ int main(int argc, const char *argv[])
             
             modelView.push(modelView.top());
             modelView.top() = glm::translate(modelView.top(), glm::vec3(firstFrequencyBinXCoord + (i * frequencyBinDeltaXCoord), -300.0f, 0.0f));
-            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, min(50.0f + (10 * frequencyBinMagnitude), openGLContext.screenHeight - 50.0f), 1.0f));
+            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, min(50.0f + (10 * frequencyBinMagnitude), openGLContext.screenHeight - 50.0f), 10.0f));
             modelView.top() = glm::translate(modelView.top(), glm::vec3(0.0f, 0.5f, 0.0f));
             
             /* send modelView to shader */
@@ -200,7 +222,7 @@ int main(int argc, const char *argv[])
             glUniform4fv(colorLocation, 1, color);
             
             /* draw frequency bin */
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             
             modelView.pop();
         }
