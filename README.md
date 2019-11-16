@@ -10,3 +10,5 @@ usage: ./ill-fire-visualizer path_to_input_file
 
 
 **examples/ill-fire-1024.mp4** shows an example output with an FFT size of 1024 frames.
+
+**examples/ill-fire-256.mp4** shows an example output with an FFT size of 256 frames.
