@@ -51,6 +51,7 @@ int main(int argc, const char *argv[])
     
     float currentFrames [FFT_SIZE * sfInfo.channels];
     sf_count_t framesRead;
+    float peakFrequencyMagnitudes [FFT_SIZE / 2] = {0.0f};
     
     /* init opengl */
     OpenGLContext openGLContext;
@@ -188,14 +189,22 @@ int main(int argc, const char *argv[])
         /* configure and draw each frequency bin */
         for (int i = 0; i < FFT_SIZE / 2; ++i) {
             float frequencyBinThickness = ((float) openGLContext.screenWidth) / FFT_SIZE;
-            float frequencyBinMagnitude = sqrt(pow(outFrequencies[i + 1][REAL], 2) + pow(outFrequencies[i + 1][IMAGINARY], 2));
-            float frequencyBinLogarithmicMagnitude = log10(((float) i) / (FFT_SIZE / 2) * 256 + 1) * frequencyBinMagnitude;
             float firstFrequencyBinXCoord = -1 * openGLContext.screenWidth * 0.5f + frequencyBinThickness;
             float frequencyBinDeltaXCoord = 2 * frequencyBinThickness;
+            float frequencyBinMagnitude = sqrt(pow(outFrequencies[i + 1][REAL], 2) + pow(outFrequencies[i + 1][IMAGINARY], 2));
+            float frequencyBinLogarithmicMagnitude = log10(((float) i) / (FFT_SIZE / 2) * 256 + 1) * frequencyBinMagnitude;
+            if (frequencyBinLogarithmicMagnitude > peakFrequencyMagnitudes[i])
+            {
+                peakFrequencyMagnitudes[i] = frequencyBinLogarithmicMagnitude;
+            }
+            else {
+                // decay peak magnitude by some factor
+                peakFrequencyMagnitudes[i] = max(peakFrequencyMagnitudes[i] - (FFT_SIZE * 0.001f + (peakFrequencyMagnitudes[i] * 0.1f)), 0.0f);
+            }
             
             modelView.push(modelView.top());
             modelView.top() = glm::translate(modelView.top(), glm::vec3(firstFrequencyBinXCoord + (i * frequencyBinDeltaXCoord), -300.0f, 0.0f));
-            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, min(50.0f + (10 * frequencyBinLogarithmicMagnitude), 550.0f), 10.0f));
+            modelView.top() = glm::scale(modelView.top(), glm::vec3(frequencyBinThickness, min(50.0f + (10 * peakFrequencyMagnitudes[i]), 550.0f), 10.0f));
             modelView.top() = glm::translate(modelView.top(), glm::vec3(0.0f, 0.5f, 0.0f));
             
             /* send modelView to shader */

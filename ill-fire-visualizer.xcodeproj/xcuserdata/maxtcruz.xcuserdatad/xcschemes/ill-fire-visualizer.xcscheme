@@ -66,12 +66,20 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/maxtcruz/Downloads/loki_final_mix.wav"
+            argument = "/Users/maxtcruz/Downloads/forestry.wav"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/maxtcruz/Downloads/forestry.wav"
+            argument = "/Users/maxtcruz/Downloads/yamanashi.wav"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/maxtcruz/Downloads/dogs2.wav"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/maxtcruz/Downloads/loki_final_mix.wav"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
