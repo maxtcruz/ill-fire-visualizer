@@ -7,10 +7,12 @@ class ShaderProgram
 {
 public:
     unsigned int ID;
-    ShaderProgram(const char* vertexPath, const char* fragmentPath);
+    ShaderProgram();
     
 private:
     void checkCompileErrors(unsigned int shader, string type);
+    const char* getVertexShader();
+    const char* getFragmentShader();
 };
 
 #endif

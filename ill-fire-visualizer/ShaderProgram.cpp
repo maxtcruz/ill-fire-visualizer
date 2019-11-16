@@ -7,40 +7,10 @@
 
 using namespace std;
 
-ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath)
+ShaderProgram::ShaderProgram()
 {
-    string vertexCode;
-    string fragmentCode;
-    ifstream vShaderFile;
-    ifstream fShaderFile;
-    
-    try
-    {
-        // open files
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
-        
-        stringstream vShaderStream, fShaderStream;
-        
-        // read file's buffer contents into streams
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-        
-        // close file handlers
-        vShaderFile.close();
-        fShaderFile.close();
-        
-        // convert stream into string
-        vertexCode   = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
-    }
-    catch (ifstream::failure e)
-    {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-    }
-    
-    const char* vShaderCode = vertexCode.c_str();
-    const char* fShaderCode = fragmentCode.c_str();
+    const char* vShaderCode = getVertexShader();
+    const char* fShaderCode = getFragmentShader();
     
     unsigned int vertex, fragment;
     
@@ -90,6 +60,37 @@ void ShaderProgram::checkCompileErrors(unsigned int shader, string type)
             cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << endl;
         }
     }
+}
+
+const char* ShaderProgram::getVertexShader()
+{
+    return "#version 330 core\n"
+    "in vec4 vPosition;\n"
+    
+    "uniform mat4 projection;\n"
+    "uniform mat4 modelView;\n"
+    "uniform vec4 vColor;\n"
+    
+    "out vec4 outColor;\n"
+    
+    "void main()\n"
+    "{\n"
+        "outColor = vColor;\n"
+        "gl_Position = projection * modelView * vPosition;\n"
+    "}";
+}
+
+const char* ShaderProgram::getFragmentShader()
+{
+    return "#version 330 core\n"
+    "in vec4 outColor;\n"
+    
+    "out vec4 fragColor;\n"
+    
+    "void main()\n"
+    "{\n"
+        "fragColor = outColor;\n"
+    "}";
 }
 
 

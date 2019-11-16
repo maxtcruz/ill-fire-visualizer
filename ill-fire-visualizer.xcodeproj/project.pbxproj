@@ -45,8 +45,6 @@
 		169AE7122379ED3B00C8553E /* SDLAudio.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SDLAudio.cpp; sourceTree = "<group>"; };
 		16D5F5132189272A00D12E26 /* ShaderProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
 		16D5F5142189293D00D12E26 /* ShaderProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderProgram.cpp; sourceTree = "<group>"; };
-		16D5F51821892ED200D12E26 /* vertex.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = vertex.sh; sourceTree = "<group>"; };
-		16D5F51921892F2300D12E26 /* fragment.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fragment.sh; sourceTree = "<group>"; };
 		16F0F37E214454C700181307 /* ill-fire-visualizer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ill-fire-visualizer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		16F0F381214454C700181307 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		16F0F389214455CA00181307 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -94,8 +92,6 @@
 		16F0F380214454C700181307 /* ill-fire-visualizer */ = {
 			isa = PBXGroup;
 			children = (
-				16D5F51821892ED200D12E26 /* vertex.sh */,
-				16D5F51921892F2300D12E26 /* fragment.sh */,
 				16F0F381214454C700181307 /* main.cpp */,
 				16D5F5132189272A00D12E26 /* ShaderProgram.h */,
 				16D5F5142189293D00D12E26 /* ShaderProgram.cpp */,

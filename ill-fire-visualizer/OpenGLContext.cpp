@@ -44,8 +44,8 @@ int OpenGLContext::initOpenGL(GLint width, GLint height, const char* title)
     return 0;
 }
 
-unsigned int OpenGLContext::compileShaderProgram(const char* vertexPath, const char* fragmentPath)
+unsigned int OpenGLContext::compileShaderProgram()
 {
-    ShaderProgram shaderProgram("vertex.sh", "fragment.sh");
+    ShaderProgram shaderProgram;
     return shaderProgram.ID;
 }

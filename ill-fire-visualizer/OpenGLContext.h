@@ -8,7 +8,7 @@ public:
     int screenWidth;
     GLFWwindow* window;
     int initOpenGL(GLint width, GLint height, const char* title);
-    unsigned int compileShaderProgram(const char* vertexPath, const char* fragmentPath);
+    unsigned int compileShaderProgram();
     
 private:
 };

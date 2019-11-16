@@ -29,6 +29,7 @@ int main(int argc, const char *argv[])
     if (argc != 2)
     {
         cout << "Usage: ill-fire-visualizer input_file" << endl;
+        return -1;
     }
     const char *inputFile = argv[1];
     
@@ -62,7 +63,7 @@ int main(int argc, const char *argv[])
     }
     
     /* compile shaders */
-    unsigned int shaderProgramID = openGLContext.compileShaderProgram("vertex.sh", "fragment.sh");
+    unsigned int shaderProgramID = openGLContext.compileShaderProgram();
 
     float vertices[] = {
         // front of cube
